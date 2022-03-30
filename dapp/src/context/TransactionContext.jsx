@@ -90,8 +90,18 @@ export const TransactionProvider = ({ children }) => {
   const connectWallet = async () => {
     try {
       if (!ethereum) return alert("Please install metamask");
-      const account = await ethereum.request({ method: "eth_requestAccounts" });
-      setCurrentAccount(account[0]);
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      const balance = await ethereum.request({
+        method: "eth_getBalance",
+        params: [accounts[0], "latest"],
+      });
+      const ethBalance = ethers.utils.formatEther(balance);
+      setCurrentAccount({
+        address: accounts[0],
+        balance: parseFloat(ethBalance).toFixed(4),
+      });
     } catch (error) {
       console.log(error);
       throw new Error(error);
